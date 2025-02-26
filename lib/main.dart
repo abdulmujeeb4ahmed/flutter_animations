@@ -5,6 +5,8 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -15,7 +17,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fading Text Animation',
+      title: 'Fading Text & Image Animation',
       theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: FadingTextAnimation(
         toggleTheme: () {
@@ -33,7 +35,11 @@ class FadingTextAnimation extends StatefulWidget {
   final Function toggleTheme;
   final bool isDarkMode;
 
-  FadingTextAnimation({required this.toggleTheme, required this.isDarkMode});
+  const FadingTextAnimation({
+    super.key,
+    required this.toggleTheme,
+    required this.isDarkMode,
+  });
 
   @override
   _FadingTextAnimationState createState() => _FadingTextAnimationState();
@@ -41,6 +47,7 @@ class FadingTextAnimation extends StatefulWidget {
 
 class _FadingTextAnimationState extends State<FadingTextAnimation> {
   bool _isVisible = true;
+  bool _isRounded = false;
   Color _textColor = Colors.blue;
 
   @override
@@ -50,8 +57,7 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
   }
 
   void _startFadingAnimation() {
-    // Automatically toggle visibility every 2 seconds.
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
           _isVisible = !_isVisible;
@@ -64,6 +70,12 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
   void toggleVisibility() {
     setState(() {
       _isVisible = !_isVisible;
+    });
+  }
+
+  void toggleImageShape() {
+    setState(() {
+      _isRounded = !_isRounded;
     });
   }
 
@@ -100,15 +112,15 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
   Widget build(BuildContext context) {
     return PageView(
       children: [
-        // First Animation Page
+        // First Page: Fading Text Animation
         Scaffold(
           appBar: AppBar(
             title: const Text('Fading Text Animation'),
             actions: [
               IconButton(
-                icon: Icon(
-                  widget.isDarkMode ? Icons.wb_sunny : Icons.nightlight_round,
-                ),
+                icon: Icon(widget.isDarkMode
+                    ? Icons.wb_sunny
+                    : Icons.nightlight_round),
                 onPressed: () => widget.toggleTheme(),
                 tooltip: 'Toggle Theme',
               ),
@@ -142,27 +154,22 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: toggleVisibility,
-            child: const Icon(Icons.play_arrow),
             backgroundColor: _textColor,
+            child: const Icon(Icons.play_arrow),
           ),
         ),
 
-        // Second Animation Page with Different Duration
+        // Second Page: Animated Image with Rounded Corners
         Scaffold(
           appBar: AppBar(
-            title: const Text('Different Fading Animation'),
+            title: const Text('Animated Asset Image'),
             actions: [
               IconButton(
-                icon: Icon(
-                  widget.isDarkMode ? Icons.wb_sunny : Icons.nightlight_round,
-                ),
+                icon: Icon(widget.isDarkMode
+                    ? Icons.wb_sunny
+                    : Icons.nightlight_round),
                 onPressed: () => widget.toggleTheme(),
                 tooltip: 'Toggle Theme',
-              ),
-              IconButton(
-                icon: const Icon(Icons.color_lens),
-                onPressed: _showColorPicker,
-                tooltip: 'Change Text Color',
               ),
             ],
           ),
@@ -170,18 +177,23 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AnimatedOpacity(
-                  opacity: _isVisible ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 1500),
+                AnimatedContainer(
+                  duration: const Duration(seconds: 1),
                   curve: Curves.easeInOut,
-                  child: Text(
-                    'Fancy Fading Animation!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: _textColor,
-                      fontWeight: FontWeight.bold,
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(_isRounded ? 100 : 10),
+                    image: const DecorationImage(
+                      image: AssetImage('assets/cat.jpg'), // Using Asset Image
+                      fit: BoxFit.cover,
                     ),
                   ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: toggleImageShape,
+                  child: const Text('Animate Image'),
                 ),
                 const SizedBox(height: 30),
                 const Text(
@@ -190,11 +202,6 @@ class _FadingTextAnimationState extends State<FadingTextAnimation> {
                 ),
               ],
             ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: toggleVisibility,
-            child: const Icon(Icons.play_arrow),
-            backgroundColor: _textColor,
           ),
         ),
       ],
@@ -208,10 +215,10 @@ class BlockPicker extends StatefulWidget {
   final ValueChanged<Color> onColorChanged;
 
   const BlockPicker({
-    Key? key,
+    super.key,
     required this.pickerColor,
     required this.onColorChanged,
-  }) : super(key: key);
+  });
 
   @override
   _BlockPickerState createState() => _BlockPickerState();
@@ -243,7 +250,7 @@ class _BlockPickerState extends State<BlockPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 280,
       height: 280,
       child: GridView.count(
